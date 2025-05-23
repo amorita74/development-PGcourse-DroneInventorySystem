@@ -38,4 +38,8 @@ public class ModelAttributeContents {
 	public static final String CATEGORY_LIST = "categoryList";
 
 	public static String PARTS_CATEGORY_UPDATE_FORM ="partsCategoryForm";
+	
+	/** 部品在庫一覧管理画面 */
+	public static final String STOCK_LIST = "stockList";
+
 }

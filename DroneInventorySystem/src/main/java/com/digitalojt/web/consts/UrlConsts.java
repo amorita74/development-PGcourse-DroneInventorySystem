@@ -24,10 +24,13 @@ public class UrlConsts {
 	public static final String STOCK_LIST = "/admin/stockList";
 
 	// 在庫一覧画面 初期
-	public static final String STOCK_LIST_INDEX = "admin/stockList/stocklist";
-
+	public static final String STOCK_LIST_INDEX = "/admin/stockList/stocklist";
 	// 在庫一覧画面 検索
-	public static final String STOCK_LIST_SEARCH = "/admin/stockList/search";
+	public static final String STOCK_LIST_SEARCH = "/admin/stockList/search";	
+	// 在庫一覧画面 登録
+	public static final String STOCK_LIST_REGISTER = "/admin/stockList/register";
+	// 在庫一覧画面 更新
+	public static final String STOCK_LIST_UPDATE = "/admin/stockList/update";
 	
 	// 在庫センター情報画面
 	public static final String  CENTER_INFO = "/admin/centerInfo";

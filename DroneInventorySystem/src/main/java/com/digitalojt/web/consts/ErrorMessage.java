@@ -40,6 +40,7 @@ public class ErrorMessage {
 
 	//登録データの登録に成功した場合のメッセージ
 	public static final String SUCCESS_REGISTER_MESSAGE = "register.success";
+	public static final String SUCCESS_REGISTERPARTS_MESSAGE = "registerParts.success";
 	
 	//登録データが重複している場合のエラーメッセージ
 	public static final String DATA_DUPLICATE_ERROR_MESSAGE = "data.duplicate";
@@ -49,6 +50,7 @@ public class ErrorMessage {
 
 	//更新に成功した場合のメッセージ
 	public static final String SUCCESS_UPDATE_MESSAGE = "update.success";
+	public static final String SUCCESS_UPDATEPARTS_MESSAGE = "updateParts.success";
 		
 	//更新に失敗した場合のエラーメッセージ
 	public static final String INVALID_UPDATE_ERROR_MESSAGE = "invalid.update";
