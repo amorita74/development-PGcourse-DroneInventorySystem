@@ -31,6 +31,8 @@ public class UrlConsts {
 	public static final String STOCK_LIST_REGISTER = "/admin/stockList/register";
 	// 在庫一覧画面 更新
 	public static final String STOCK_LIST_UPDATE = "/admin/stockList/update";
+	// 在庫一覧画面 更新+stockId
+	public static final String STOCK_LIST_UPDATE_WITHID = "/admin/stockList/update/{stockId}";
 	
 	// 在庫センター情報画面
 	public static final String  CENTER_INFO = "/admin/centerInfo";

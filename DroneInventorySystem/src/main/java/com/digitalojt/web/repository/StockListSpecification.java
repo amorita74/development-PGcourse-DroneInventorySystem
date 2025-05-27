@@ -7,6 +7,8 @@ import jakarta.persistence.criteria.Root;
 
 import org.springframework.data.jpa.domain.Specification;
 
+import com.digitalojt.web.consts.AmountValueComparisonType;
+import com.digitalojt.web.consts.StockListFields;
 import com.digitalojt.web.entity.StockList;
 
 /**
@@ -34,7 +36,7 @@ public class StockListSpecification {
                     
                 }
                 
-                return cb.equal(root.get("categoryId"), categoryId);
+                return cb.equal(root.get(StockListFields.CATEGORY_ID), categoryId);
                 
             }
         };
@@ -58,7 +60,7 @@ public class StockListSpecification {
                     return null;
                 }
                 
-                return cb.like(root.get("stockName"), "%" + stockName + "%");
+                return cb.like(root.get(StockListFields.STOCK_NAME), "%" + stockName + "%");
             }
         };
     }
@@ -86,14 +88,14 @@ public class StockListSpecification {
                 
                 switch (comparisonType) {
                 
-                    case "eq"://個数とamountValueの値が等しい
-                        return cb.equal(root.get("amountValue"), amount);
+                    case AmountValueComparisonType.EQUAL ://個数とamountValueの値が等しい
+                        return cb.equal(root.get(StockListFields.AMOUNT_VALUE), amount);
                         
-                    case "ge"://個数よりamountValueの値が大きい
-                        return cb.greaterThanOrEqualTo(root.get("amountValue"), amount);
+                    case AmountValueComparisonType.GREATHER_THAN://個数よりamountValueの値が大きい
+                        return cb.greaterThanOrEqualTo(root.get(StockListFields.AMOUNT_VALUE), amount);
                         
-                    case "le"://個数よりamountValueの値が小さい
-                        return cb.lessThanOrEqualTo(root.get("amountValue"), amount);
+                    case AmountValueComparisonType.LESS_THAN://個数よりamountValueの値が小さい
+                        return cb.lessThanOrEqualTo(root.get(StockListFields.AMOUNT_VALUE), amount);
                         
                     default:
                         // 想定外の比較タイプは無視

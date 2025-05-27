@@ -54,4 +54,8 @@ public class ErrorMessage {
 		
 	//更新に失敗した場合のエラーメッセージ
 	public static final String INVALID_UPDATE_ERROR_MESSAGE = "invalid.update";
+	
+	//更新対象が見つからなかった場合のエラーメッセージ
+	public static final String NOT_FOUND_UPDATE_ERROR_MESSAGE = "notfound.update";
+
 }

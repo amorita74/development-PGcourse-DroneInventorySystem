@@ -22,6 +22,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.digitalojt.web.consts.ErrorMessage;
 import com.digitalojt.web.consts.LogMessage;
 import com.digitalojt.web.consts.ModelAttributeContents;
+import com.digitalojt.web.consts.StockListFields;
 import com.digitalojt.web.consts.UrlConsts;
 import com.digitalojt.web.entity.CategoryInfo;
 import com.digitalojt.web.entity.CenterInfo;
@@ -66,36 +67,30 @@ public class StockListController extends AbstractController {
     
 	@GetMapping(UrlConsts.STOCK_LIST)
 	public String index(@RequestParam(required = false) Integer deleteFlag, Model model) {
-		//return UrlConsts.STOCK_LIST_INDEX;
 
 	//ログ取得
 	logStart(LogMessage.HTTP_GET);
-    logEnd(LogMessage.HTTP_GET);
     
-    // Thymeleafが th:object="${stockListSearchForm}" で参照できるように、
-    // 明示的に新しい StockListSearchForm オブジェクトをモデルに追加。
-    model.addAttribute("stockListSearchForm", new StockListSearchForm());
-
-    
-    // 共通処理呼び出し
-    setCommonModel(model);
-    
-    
-	//部品在庫一覧情報  取得処理（部品在庫一覧管理画面に表示するデータを取得）
-	List<StockList> searchResults = service.getStockListData();
-	
-			//System.out.println("取得件数 = " + searchResults.size()); //デバッグログ
-	
-	//画面表示用に商品情報をセット
-	model.addAttribute(ModelAttributeContents.STOCK_LIST,searchResults);		
+    	// Thymeleafが th:object="${stockListSearchForm}" で参照できるように、
+    	// 明示的に新しい StockListSearchForm オブジェクトをモデルに追加。
+    	model.addAttribute(ModelAttributeContents.STOCK_LIST_SEARCH_FORM, new StockListSearchForm());
+   
+    	// 共通処理呼び出し
+    	setCommonModel(model);
        
-    		//System.out.println("stockList: " + searchResults); // デバッグ
-    
+    	//部品在庫一覧情報  取得処理（部品在庫一覧管理画面に表示するデータを取得）
+    	List<StockList> searchResults = service.getStockListData();
+	    	
+    	//画面表示用に商品情報をセット
+    	model.addAttribute(ModelAttributeContents.STOCK_LIST,searchResults);		
+
+	//ログ取得終了
+    logEnd(LogMessage.HTTP_GET);
+	
 	return UrlConsts.STOCK_LIST_INDEX;
 
 	}
-	
-	
+		
 	/**
 	 * 	部品在庫一覧 登録画面表示
 	 * @param model Modelオブジェクト
@@ -112,15 +107,14 @@ public class StockListController extends AbstractController {
 	 * 	@param string リダイレクト先のURL（入力エラー時は登録画面,成功時は管理画面）
 	 */
 	
-
 	//検索処理
 	@GetMapping(UrlConsts.STOCK_LIST_SEARCH)
 	public String search(StockListSearchForm form, Model model, RedirectAttributes redirectAttributes) {
 
-	    System.out.println("検索処理実行");	    
-	    System.out.println("部品在庫一覧_検索 受け取ったフォームの内容: " + form);
+	//ログ取得
+	logStart(LogMessage.HTTP_GET);
 	    
-	    model.addAttribute("stockListSearchForm", form);
+	    model.addAttribute(ModelAttributeContents.STOCK_LIST_SEARCH_FORM, form);
 	    
 	    // 共通処理呼び出し
 	    setCommonModel(model);
@@ -129,24 +123,24 @@ public class StockListController extends AbstractController {
 	            form.getCategoryId(),
 	            form.getStockName(),
 	            form.getStockAmount(),
-	            form.getComparisonType(), // eq / ge / le
-	            form.getDeleteFlag()
-
-	        );
+	            form.getComparisonType(),
+	            form.getDeleteFlag());
+	    
 	        model.addAttribute(ModelAttributeContents.STOCK_LIST, results);
-	 	 
-	    return UrlConsts.STOCK_LIST_INDEX;
+
+	 //ログ取得終了
+	 logEnd(LogMessage.HTTP_GET);
+        
+	 return UrlConsts.STOCK_LIST_INDEX;
+	 
 	}
 	
 	// 部品在庫一覧 登録画面を表示する
 	@GetMapping(UrlConsts.STOCK_LIST_REGISTER)
 	public String viewRegister(Model model,PartsCategoryForm form) {
 		
-		//ログ取得
-		logStart(LogMessage.HTTP_GET);
-	    logEnd(LogMessage.HTTP_GET);
-		
-		System.out.println("部品在庫一覧 登録画面表示");
+	//ログ取得
+	logStart(LogMessage.HTTP_GET);
 		
 		//カテゴリー一覧を取得する 削除フラグ:0
 		List<CategoryInfo> categoryList = categoryService.getCategoryInfoData();
@@ -156,9 +150,13 @@ public class StockListController extends AbstractController {
 		List<CenterInfo> centerList = centerService.getCenterInfoData();
 		model.addAttribute(ModelAttributeContents.CENTER_INFO_LIST,centerList);		
 	    
-	    model.addAttribute("partsInfoForm", new PartsInfoForm());
+	    model.addAttribute(ModelAttributeContents.STOCK_PARTS_FORM, new PartsInfoForm());
 
-        return "redirect:" + UrlConsts.STOCK_LIST_REGISTER;  // 部品在庫一覧画面にリダイレクト
+	 //ログ取得終了
+	 logEnd(LogMessage.HTTP_GET);
+
+	    // 修正：部品在庫一覧画面に返却 redirectだと無限ループ発生
+	    return UrlConsts.STOCK_LIST_REGISTER; 
 		
 	}
 	
@@ -167,21 +165,20 @@ public class StockListController extends AbstractController {
 	public String register(Model model, @Valid PartsInfoForm form, BindingResult bindingResult,
 			RedirectAttributes redirectAttributes) {
 		
-		//ログ取得
-		logStart(LogMessage.HTTP_GET);
-	    logEnd(LogMessage.HTTP_GET);
-
-		System.out.println("部品在庫一覧 登録処理実行");
+	//ログ取得
+	logStart(LogMessage.HTTP_POST);
 
 		// 入力時のバリデーションチェック
 		if(bindingResult.hasErrors()) {
 
+		    // バリデーションエラーメッセージ取得をredirectAttributesに追加
 			String errorMessage = getValidationErrorMessage(bindingResult, redirectAttributes);
-			System.out.println("errorMsg: " + errorMessage);
-			
-			// バリデーションエラーメッセージ取得をredirectAttributesに追加
-			redirectAttributes.addFlashAttribute(ModelAttributeContents.ERROR_MSG,
-				getValidationErrorMessage(bindingResult, redirectAttributes));
+
+			// ログ出力:バリデーションエラー
+			logValidationError(LogMessage.HTTP_POST,errorMessage);	
+		
+			// エラーメッセージを画面に渡す
+			redirectAttributes.addFlashAttribute(ModelAttributeContents.ERROR_MSG,errorMessage);
 		
 			// 部品在庫一覧画面にリダイレクト ERROR_MSGを渡す
 			return "redirect:" + UrlConsts.STOCK_LIST_REGISTER; //部品在庫一覧 登録画面にリダイレクト
@@ -191,9 +188,6 @@ public class StockListController extends AbstractController {
 		// 登録データに重複あればエラーメッセージを返す
 	    try {
 	    	
-			// ここでフォームの内容を出力
-		    System.out.println("部品在庫一覧_登録 受け取ったフォームの内容: " + form);
-
 	    	service.registerStockList(form);  // 登録処理
 
 	        //正常処理メッセージ
@@ -202,16 +196,48 @@ public class StockListController extends AbstractController {
 	        		new Object[]{form.getStockName()}, 		// プレースホルダーにカテゴリ名を渡す
 	        		Locale.getDefault()));
 				
+	        
 	        return "redirect:" + UrlConsts.STOCK_LIST; //部品在庫一覧 画面にリダイレクト
 
 	    } catch (DataIntegrityViolationException e) {
-	        // 重複があればここに到達
-	        redirectAttributes.addFlashAttribute("errorMsg", e.getMessage());  // フラッシュスコープにエラーメッセージを追加
+	    	
+	    	//例外処理 ログ取得
+	    	logError(LogMessage.HTTP_POST, e);
+	    		    	
+	    	// 重複があればここに到達
+	        redirectAttributes.addFlashAttribute(ModelAttributeContents.ERROR_MSG, e.getMessage());  // フラッシュスコープにエラーメッセージを追加
+
 	        return "redirect:" + UrlConsts.STOCK_LIST_REGISTER; // 部品在庫一覧 画面にリダイレクト
+
 	    } catch (InvalidInputException e) {
-	        // 無効な入力の場合
-	        redirectAttributes.addFlashAttribute("errorMsg", e.getMessage());
+	    	
+	    	//例外処理 ログ取得
+	    	logError(LogMessage.HTTP_POST, e);
+	    		    	
+	    	// 無効な入力の場合
+	        redirectAttributes.addFlashAttribute(ModelAttributeContents.ERROR_MSG, e.getMessage());
+
 	        return "redirect:" + UrlConsts.STOCK_LIST_REGISTER;
+
+	      //予期しない例外処理を追加  
+	    } catch (Exception e) {
+	    	
+	    	//例外処理 ログ取得
+	    	logError(LogMessage.HTTP_POST, e);
+	    		    	
+	    	redirectAttributes.addFlashAttribute(ModelAttributeContents.ERROR_MSG,
+	    			messageSource.getMessage(ErrorMessage.INVALID_UPDATE_ERROR_MESSAGE,
+	    			null, Locale.getDefault()));
+
+
+	    	//エラーコントローラに渡す
+	    	return "redirect:" + UrlConsts.ERROR;
+	    	
+	    }finally {
+
+	   	 	//ログ取得終了
+	   	 	logEnd(LogMessage.HTTP_POST);
+	    	
 	    }
 				
 
@@ -225,26 +251,16 @@ public class StockListController extends AbstractController {
 	 *	@return String(Viewの名前：部品在庫一覧画面)
 	
 	*/
-
-	/**	
-	 *	部品在庫一覧 更新処理
-	 * 	
-     *  @param model Modelオブジェクト
-	 *	@return String(Viewの名前：部品在庫一覧画面)
-	
-	*/
 		
 	// 更新/削除画面を表示する
-	@GetMapping(UrlConsts.STOCK_LIST_UPDATE + "/{stockId}")
-	public String viewUpdate(Model model, @PathVariable("stockId") Integer stockId, PartsInfoForm form) {
+	@GetMapping(UrlConsts.STOCK_LIST_UPDATE_WITHID)
+	public String viewUpdate(Model model, @PathVariable(StockListFields.STOCK_ID) Integer stockId, PartsInfoForm form,
+			BindingResult bindingResult, RedirectAttributes redirectAttributes) {
 
-		//ログ取得
-		logStart(LogMessage.HTTP_GET);
-	    logEnd(LogMessage.HTTP_GET);
+	//ログ取得
+	logStart(LogMessage.HTTP_GET);
 
-	    System.out.println("部品在庫一覧 更新/削除画面表示 (stockId: " + stockId + ")");
-
-	    StockList stockList = service.getStockListData(stockId); // サービス層の既存メソッドを使用
+	    StockList stockList = service.getStockListDataWithId(stockId); // サービス層の既存メソッドを使用
 
 		//カテゴリー一覧を取得する 削除フラグ:0
 		List<CategoryInfo> categoryList = categoryService.getCategoryInfoData();
@@ -264,33 +280,45 @@ public class StockListController extends AbstractController {
 	        form.setStockAmounts(stockList.getAmountValue());
 	        form.setDeleteFlag(stockList.getDeleteFlag() == 1); // int の deleteFlag を boolean の form に設定
 
-	        model.addAttribute("partsInfoForm", form);
+	        model.addAttribute(ModelAttributeContents.STOCK_PARTS_FORM, form);
 
-			// ここでフォームの内容を出力
-		    System.out.println("部品在庫一覧_更新受取 受け取ったフォームの内容: " + form);
+	    	//ログ取得終了
+	    	logEnd(LogMessage.HTTP_GET);
 
 	        return UrlConsts.STOCK_LIST_UPDATE;
 	        
 	    } else {
 	    	
-	        model.addAttribute("errorMsg", "指定された部品在庫情報が見つかりませんでした。");
-	        return "redirect:" + UrlConsts.STOCK_LIST_INDEX;
+
+			// 修正：エラーメッセージ取得をredirectAttributesに追加
+			redirectAttributes.addFlashAttribute(ModelAttributeContents.ERROR_MSG,
+					messageSource.getMessage(ErrorMessage.NOT_FOUND_UPDATE_ERROR_MESSAGE,
+							null, Locale.getDefault()));
+	    	
+			//ログ取得終了
+			logEnd(LogMessage.HTTP_GET);
+
+	    	return "redirect:" + UrlConsts.STOCK_LIST_INDEX;
 
 	    }
-
+	        
 	}
 	
+	/**	
+	 *	部品在庫一覧 更新処理
+	 * 	
+     *  @param model Modelオブジェクト
+	 *	@return String(Viewの名前：部品在庫一覧画面)
+	
+	*/		
 	//更新処理
 	@PatchMapping(UrlConsts.STOCK_LIST_UPDATE)
 	public String update(Model model, @Valid PartsInfoForm form, BindingResult bindingResult,
 			RedirectAttributes redirectAttributes) {
 				
-		//ログ取得
-		logStart(LogMessage.HTTP_GET);
-	    logEnd(LogMessage.HTTP_GET);
+	//ログ取得
+	logStart(LogMessage.HTTP_GET);
 		
-		System.out.println("部品在庫一覧 更新処理実行");
-
 		// 入力値のバリデーションチェック
 		if(bindingResult.hasErrors()) {
 			
@@ -299,14 +327,12 @@ public class StockListController extends AbstractController {
 					getValidationErrorMessage(bindingResult, redirectAttributes));
 
 			// フォームデータも渡す
-		    redirectAttributes.addFlashAttribute("partsInfoForm", form);
+		    redirectAttributes.addFlashAttribute(ModelAttributeContents.STOCK_PARTS_FORM, form);
 
 			// 部品在庫一覧 更新/削除画面にリダイレクト
 			return "redirect:" + UrlConsts.STOCK_LIST_REGISTER;
  		}
 		
-		// デバッグ：ここでフォームの内容を出力
-	    System.out.println("部品在庫一覧_更新渡し 渡したフォームの内容: " + form);
 		// 部品在庫情報を更新		
 	    service.updateStockList(form);
 	    
@@ -322,7 +348,10 @@ public class StockListController extends AbstractController {
                 new Object[]{form.getStockName()}, // プレースホルダーに部品在庫名を渡す
                 Locale.getDefault()));		
 		
-        return "redirect:" + UrlConsts.STOCK_LIST;  // 部品在庫一覧画面にリダイレクト
+ 	//ログ取得終了
+ 	logEnd(LogMessage.HTTP_GET);
+
+ 	return "redirect:" + UrlConsts.STOCK_LIST;  // 部品在庫一覧画面にリダイレクト
 
 	}
 	

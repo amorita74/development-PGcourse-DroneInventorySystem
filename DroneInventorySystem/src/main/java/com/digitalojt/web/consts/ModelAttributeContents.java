@@ -42,4 +42,8 @@ public class ModelAttributeContents {
 	/** 部品在庫一覧管理画面 */
 	public static final String STOCK_LIST = "stockList";
 
+	public static final String STOCK_LIST_SEARCH_FORM = "stockListSearchForm";
+	
+	public static final String STOCK_PARTS_FORM = "partsInfoForm";
+
 }
