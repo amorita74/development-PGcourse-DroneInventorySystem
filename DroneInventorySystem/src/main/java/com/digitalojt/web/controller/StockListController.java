@@ -109,7 +109,8 @@ public class StockListController extends AbstractController {
 	
 	//検索処理
 	@GetMapping(UrlConsts.STOCK_LIST_SEARCH)
-	public String search(StockListSearchForm form, Model model, RedirectAttributes redirectAttributes) {
+	public String search(StockListSearchForm form, Model model) {
+	//public String search(StockListSearchForm form, Model model, RedirectAttributes redirectAttributes) {
 
 	//ログ取得
 	logStart(LogMessage.HTTP_GET);
@@ -172,7 +173,7 @@ public class StockListController extends AbstractController {
 		if(bindingResult.hasErrors()) {
 
 		    // バリデーションエラーメッセージ取得をredirectAttributesに追加
-			String errorMessage = getValidationErrorMessage(bindingResult, redirectAttributes);
+			String errorMessage = getValidationErrorMessage(bindingResult);
 
 			// ログ出力:バリデーションエラー
 			logValidationError(LogMessage.HTTP_POST,errorMessage);	
@@ -324,7 +325,7 @@ public class StockListController extends AbstractController {
 			
 			// バリデーションエラーメッセージ取得をredirectAttributesに追加
 			redirectAttributes.addFlashAttribute(ModelAttributeContents.ERROR_MSG,
-					getValidationErrorMessage(bindingResult, redirectAttributes));
+					getValidationErrorMessage(bindingResult));
 
 			// フォームデータも渡す
 		    redirectAttributes.addFlashAttribute(ModelAttributeContents.STOCK_PARTS_FORM, form);
@@ -357,7 +358,7 @@ public class StockListController extends AbstractController {
 	
 	
 	//バリデーションエラーメッセージを取得する
-	private String getValidationErrorMessage(BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+	private String getValidationErrorMessage(BindingResult bindingResult) {
 
 	    StringBuilder errorMessage = new StringBuilder();
 

@@ -91,7 +91,7 @@ public class StockListSpecification {
                     case AmountValueComparisonType.EQUAL ://個数とamountValueの値が等しい
                         return cb.equal(root.get(StockListFields.AMOUNT_VALUE), amount);
                         
-                    case AmountValueComparisonType.GREATHER_THAN://個数よりamountValueの値が大きい
+                    case AmountValueComparisonType.GREATER_THAN://個数よりamountValueの値が大きい
                         return cb.greaterThanOrEqualTo(root.get(StockListFields.AMOUNT_VALUE), amount);
                         
                     case AmountValueComparisonType.LESS_THAN://個数よりamountValueの値が小さい
