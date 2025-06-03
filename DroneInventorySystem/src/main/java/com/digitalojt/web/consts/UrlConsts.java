@@ -24,10 +24,15 @@ public class UrlConsts {
 	public static final String STOCK_LIST = "/admin/stockList";
 
 	// 在庫一覧画面 初期
-	public static final String STOCK_LIST_INDEX = "admin/stockList/stocklist";
-
+	public static final String STOCK_LIST_INDEX = "/admin/stockList/stocklist";
 	// 在庫一覧画面 検索
-	public static final String STOCK_LIST_SEARCH = "/admin/stockList/search";
+	public static final String STOCK_LIST_SEARCH = "/admin/stockList/search";	
+	// 在庫一覧画面 登録
+	public static final String STOCK_LIST_REGISTER = "/admin/stockList/register";
+	// 在庫一覧画面 更新
+	public static final String STOCK_LIST_UPDATE = "/admin/stockList/update";
+	// 在庫一覧画面 更新+stockId
+	public static final String STOCK_LIST_UPDATE_WITHID = "/admin/stockList/update/{stockId}";
 	
 	// 在庫センター情報画面
 	public static final String  CENTER_INFO = "/admin/centerInfo";
@@ -52,5 +57,23 @@ public class UrlConsts {
 	
 	// エラー
 	public static final String  ERROR_VIEW = "error/error";
+	
+	// 部品カテゴリー管理画面 初期処理
+	public static final String PARTS_CATEGORY = "/admin/partsCategory";
+	// 部品カテゴリー管理画面　テンプレート名
+	public static final String PARTS_CATEGORY_INDEX = "admin/partsCategory/partsCategory";
+	
+	public static final String[] CATEGORY_LIST = {"/admin/partsCategory"};
+	
+	public static final String CATEGORY_LIST_INDEX = "/admin/partsCategory/partsCategory";
+
+	// 部品カテゴリー管理画面 検索
+	public static final String PARTS_CATEGORY_SEARCH = "/admin/partsCategory/search";
+
+	
+	// 部品カテゴリー管理画面 登録
+	public static final String PARTS_CATEGORY_REGISTER = "/admin/partsCategory/register";
+
+	public static final String PARTS_CATEGORY_UPDATE = "/admin/partsCategory/update";
 
 }

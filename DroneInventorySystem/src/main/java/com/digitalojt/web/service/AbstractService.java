@@ -1,28 +1,27 @@
-package com.digitalojt.web.controller;
+package com.digitalojt.web.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.error.ErrorController;
-import org.springframework.context.MessageSource;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.stereotype.Service;
 
 import com.digitalojt.web.consts.LogMessage;
-import com.digitalojt.web.util.MessageManager;
 
 /**
- * 抽象コントローラー
- * ※全てのコントローラークラスは、このクラスを継承すること
- *
- * @author dotlife
- *
+ * 抽象サービス
+ * ※部品在庫一覧画面のログ取得に使用する
+ * ※抽象コントローラ：abstructContorollerと中身は同じ
+ *  （setFlashErrorMsgは未使用のため除去）
  */
-public abstract class AbstractController implements ErrorController {
 
-	// ロガーは各コントローラで使えるように共通化
-	private static final Logger logger = LoggerFactory.getLogger(AbstractController.class);
+@Service
+public abstract class AbstractService {
+	
+
+	// ロガーを共通部品として定義
+	private static final Logger logger = LoggerFactory.getLogger(AbstractService.class);
 
 	@Autowired
 	private HttpServletRequest request; // リクエスト情報を取得
@@ -91,16 +90,5 @@ public abstract class AbstractController implements ErrorController {
 		logger.error(String.format(LogMessage.ERROR_LOG, action, getMethodName(), errorMsg));
 	}
 
-	/**
-	 * エラーメッセージをフラッシュメッセージにセット
-	 * 
-	 * @param messageSource メッセージソース
-	 * @param redirectAttributes リダイレクト属性
-	 * @param messageConst メッセージ定数
-	 */
-	public void setFlashErrorMsg(MessageSource messageSource, RedirectAttributes redirectAttributes,
-			String messageConst) {
-		String errorMsg = MessageManager.getMessage(messageSource, messageConst);
-		redirectAttributes.addFlashAttribute(LogMessage.FLASH_ATTRIBUTE_ERROR, errorMsg);
-	}
+
 }

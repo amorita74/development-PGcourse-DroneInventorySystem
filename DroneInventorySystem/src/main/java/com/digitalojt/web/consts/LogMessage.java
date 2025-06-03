@@ -26,6 +26,8 @@ public class LogMessage {
 	//(GETかPOST)-(処理対象の関数名)-(開始か終了)
 	public static final String APP_LOG = "APP: %s - %s - %s";
 	
+	public static final String APP_SERVICE_LOG = "APP: %s";
+	
 	public static final String PROCESS_START = "START";
 	public static final String PROCESS_END = "END";
 	public static final String FLASH_ATTRIBUTE_ERROR = "errorMsg";
@@ -34,4 +36,9 @@ public class LogMessage {
 	//HTTPメソッド
     public static final String HTTP_GET = "GET";
     public static final String HTTP_POST = "POST";
+    
+	//更新/削除フラグ
+    public static final String FLAG_ACTIVE = "DELITE_FLAG:ACTIVE";
+    public static final String FLAG_DELETE = "DELITE_FLAG:DELETE";
+
 }

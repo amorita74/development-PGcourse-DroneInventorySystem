@@ -33,4 +33,17 @@ public class ModelAttributeContents {
 	/** 在庫センター情報画面*/
 	public static final int INITIAL_CAPACITY_FROM = 10;// 容量(From)初期値
     public static final int MAX_CENTER_NAME_LENGTH = 20; // 最大文字数
+
+    /** 部品カテゴリー管理画面*/
+	public static final String CATEGORY_LIST = "categoryList";
+
+	public static String PARTS_CATEGORY_UPDATE_FORM ="partsCategoryForm";
+	
+	/** 部品在庫一覧管理画面 */
+	public static final String STOCK_LIST = "stockList";
+
+	public static final String STOCK_LIST_SEARCH_FORM = "stockListSearchForm";
+	
+	public static final String STOCK_PARTS_FORM = "partsInfoForm";
+
 }
