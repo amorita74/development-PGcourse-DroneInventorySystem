@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import jakarta.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
@@ -56,7 +57,9 @@ public class StockListController extends AbstractController {
 	// Centerのサービス
 	private final CenterInfoService centerService;
 	
+	
 	 // メッセージソースを定義
+	@Autowired
     private final MessageSource messageSource;	
 	
 	/**
@@ -109,11 +112,28 @@ public class StockListController extends AbstractController {
 	
 	//検索処理
 	@GetMapping(UrlConsts.STOCK_LIST_SEARCH)
-	public String search(StockListSearchForm form, Model model) {
-	//public String search(StockListSearchForm form, Model model, RedirectAttributes redirectAttributes) {
-
+	public String search(@Valid StockListSearchForm form, BindingResult bindingResult, Model model) {
+		
 	//ログ取得
 	logStart(LogMessage.HTTP_GET);
+	
+	//START -- 障害ID:002対応：バリデーションエラーチェックを追加 -- 
+	if (bindingResult.hasErrors()) {
+	    setCommonModel(model);
+	    model.addAttribute(ModelAttributeContents.STOCK_LIST_SEARCH_FORM, form);
+	    
+        // エラーメッセージを手動で詰め替える（最初のエラーだけ例として表示）
+        String error = bindingResult.getFieldErrors().stream()
+                .map(e -> e.getDefaultMessage())
+                .findFirst()
+                //保険で入れておく
+                .orElse(ErrorMessage.UNEXPECTED_SEARCH_ERROR_MESSAGE);
+
+        model.addAttribute(ModelAttributeContents.ERROR_MSG , error);
+        
+	    return UrlConsts.STOCK_LIST_INDEX;
+	}
+	//END -- 障害ID:002対応： -- 
 	    
 	    model.addAttribute(ModelAttributeContents.STOCK_LIST_SEARCH_FORM, form);
 	    
@@ -127,7 +147,19 @@ public class StockListController extends AbstractController {
 	            form.getComparisonType(),
 	            form.getDeleteFlag());
 	    
-	        model.addAttribute(ModelAttributeContents.STOCK_LIST, results);
+	    
+	    //START -- 障害ID:001対応：検索結果が0件だった時のメッセージ出力処理を実装 --
+	    if (results.isEmpty()) {
+	    	
+	    	String message = messageSource.getMessage(ErrorMessage.NOT_FOUND_SEARCH_ERROR_MESSAGE, null, Locale.getDefault());
+	        model.addAttribute(ModelAttributeContents.ERROR_MSG, message);
+
+	    } else {
+
+		    model.addAttribute(ModelAttributeContents.STOCK_LIST, results);
+
+	    }
+	    //END -- 障害ID:001対応 --
 
 	 //ログ取得終了
 	 logEnd(LogMessage.HTTP_GET);
@@ -172,14 +204,16 @@ public class StockListController extends AbstractController {
 		// 入力時のバリデーションチェック
 		if(bindingResult.hasErrors()) {
 
-		    // バリデーションエラーメッセージ取得をredirectAttributesに追加
-			String errorMessage = getValidationErrorMessage(bindingResult);
-
+			//START -- 障害ID:003,004対応：バリデーションエラーメッセージを改修 -- 
+		    // 共通メソッド呼び出し：バリデーションエラーメッセージ出力処理		
+			String errorMessage = buildValidationErrorMessage(bindingResult);
+			// エラーメッセージを画面に渡す
+		    redirectAttributes.addFlashAttribute(ModelAttributeContents.ERROR_MSG, errorMessage);
+		    //END -- 障害ID:003,004対応 -- 
+			
 			// ログ出力:バリデーションエラー
 			logValidationError(LogMessage.HTTP_POST,errorMessage);	
 		
-			// エラーメッセージを画面に渡す
-			redirectAttributes.addFlashAttribute(ModelAttributeContents.ERROR_MSG,errorMessage);
 		
 			// 部品在庫一覧画面にリダイレクト ERROR_MSGを渡す
 			return "redirect:" + UrlConsts.STOCK_LIST_REGISTER; //部品在庫一覧 登録画面にリダイレクト
@@ -251,8 +285,7 @@ public class StockListController extends AbstractController {
      *  @param model Modelオブジェクト
 	 *	@return String(Viewの名前：部品在庫一覧画面)
 	
-	*/
-		
+	*/		
 	// 更新/削除画面を表示する
 	@GetMapping(UrlConsts.STOCK_LIST_UPDATE_WITHID)
 	public String viewUpdate(Model model, @PathVariable(StockListFields.STOCK_ID) Integer stockId, PartsInfoForm form,
@@ -323,16 +356,31 @@ public class StockListController extends AbstractController {
 		// 入力値のバリデーションチェック
 		if(bindingResult.hasErrors()) {
 			
-			// バリデーションエラーメッセージ取得をredirectAttributesに追加
-			redirectAttributes.addFlashAttribute(ModelAttributeContents.ERROR_MSG,
-					getValidationErrorMessage(bindingResult));
+		  //START -- 障害ID:004対応：バリデーションエラーメッセージを改修 -- 
+		    // 共通メソッド呼び出し：バリデーションエラーメッセージ出力処理		
+			String errorMessage = buildValidationErrorMessage(bindingResult);			
+			// エラーメッセージを画面に渡す
+		    redirectAttributes.addFlashAttribute(ModelAttributeContents.ERROR_MSG, errorMessage);
+		    //END -- 障害ID:0004対応 -- 
 
 			// フォームデータも渡す
 		    redirectAttributes.addFlashAttribute(ModelAttributeContents.STOCK_PARTS_FORM, form);
 
 			// 部品在庫一覧 更新/削除画面にリダイレクト
 			return "redirect:" + UrlConsts.STOCK_LIST_REGISTER;
+												
  		}
+		
+		// START -- 障害ID:006対応：更新時、名称重複登録チェック処理を追加 -- 
+		try {
+		    service.updateStockList(form);
+		} catch (IllegalArgumentException e) {
+		    redirectAttributes.addFlashAttribute(ModelAttributeContents.ERROR_MSG, e.getMessage());
+		    redirectAttributes.addFlashAttribute(ModelAttributeContents.STOCK_PARTS_FORM, form);
+		    return "redirect:" + UrlConsts.STOCK_LIST_REGISTER;
+		}
+	    // END -- 障害ID:0006対応 -- 
+
 		
 		// 部品在庫情報を更新		
 	    service.updateStockList(form);
@@ -357,25 +405,6 @@ public class StockListController extends AbstractController {
 	}
 	
 	
-	//バリデーションエラーメッセージを取得する
-	private String getValidationErrorMessage(BindingResult bindingResult) {
-
-	    StringBuilder errorMessage = new StringBuilder();
-
-	    // フィールドごとのエラーメッセージを取得し、リストに格納
-	    bindingResult.getFieldErrors().forEach(error -> {
-	        errorMessage.append(error.getDefaultMessage()).append("<br>"); // メッセージを改行で区切って追加 (HTML表示を考慮)
-	    });
-
-	    // グローバルエラーメッセージを取得
-	    bindingResult.getGlobalErrors().forEach(error -> {
-	        errorMessage.append(error.getDefaultMessage()).append("<br>");
-	    });
-
-	    return errorMessage.toString();
-	    
-	}
-	
 	//ヘルパーメソッドとして共通化
 	private void setCommonModel(Model model) {
 	    // カテゴリー
@@ -391,6 +420,22 @@ public class StockListController extends AbstractController {
 	    Map<Integer, String> centerMap = centerList.stream()
 	        .collect(Collectors.toMap(CenterInfo::getCenterId, CenterInfo::getCenterName));
 	    model.addAttribute("centerMap", centerMap);
-	}	
+	}
+	
+	
+	
+    //START -- 障害ID:001,002,003対応：バリデーションエラーメッセージを改修 --
+	  //共通メソッドとして以下を追加
+	  // バリデーションエラーメッセージを出力するメソッド
+    public static String buildValidationErrorMessage(BindingResult bindingResult) {
+    	
+    	// バリデーションエラーメッセージ取得をredirectAttributesに追加			
+
+        return bindingResult.getAllErrors().stream()
+                .map(error -> error.getDefaultMessage())
+                .collect(Collectors.joining("<br>"));
+    }
+   //END -- 障害ID:001,002,003対応 -- 
+
 	
 }

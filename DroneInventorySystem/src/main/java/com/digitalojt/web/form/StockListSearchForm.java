@@ -19,8 +19,8 @@ public class StockListSearchForm {
 	private Integer categoryId;
 	
 	// 部品在庫名
-	@Size(max = 20, message = ErrorMessage.CATEGORY_NAME_INVALID_LENGTH)
-	@Pattern(regexp = "^[^{}()'*;$&=]*$", message = ErrorMessage.INVALID_INPUT_ERROR_MESSAGE)		
+	@Size(max = 20, message = ErrorMessage.STOCKPARTS_NAME_REQUIRED)
+	@Pattern(regexp = "^[^\\s{}()'*;$&=]*$", message = ErrorMessage.INVALID_INPUT_ERROR_MESSAGE)	
     private String stockName;
 
     // 個数   
