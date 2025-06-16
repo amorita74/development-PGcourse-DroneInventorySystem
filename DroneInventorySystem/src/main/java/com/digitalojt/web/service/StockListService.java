@@ -186,6 +186,15 @@ public class StockListService extends AbstractService{
 		    );
 		}
 		
+		// START -- 障害ID:006対応：更新時、名称重複登録チェック処理を追加 -- 
+		// 重複チェック
+		if (repository.existsByStockNameAndStockIdNot(form.getStockName(), form.getStockId())) {
+		    throw new IllegalArgumentException(
+		        messageSource.getMessage(ErrorMessage.DATA_DUPLICATE_ERROR_MESSAGE,
+		            new Object[]{form.getStockName()}, Locale.getDefault()));
+		}
+		// END -- 障害ID:006対応 -- 
+		
 		 // 中身を取り出す
 		 StockList entity = optional.get();
 		
@@ -208,6 +217,14 @@ public class StockListService extends AbstractService{
 
 	    	// 更新の場合
 	    	entity.setStockName(form.getStockName());
+	    	
+	    	//START -- 障害ID:0005対応：更新する項目を追加 --
+	    	entity.setCategoryId(form.getCategoryId()); 		//カテゴリーID
+	    	entity.setCenterId(form.getCenterId()); 			//センターID
+	    	entity.setDescription(form.getStockDescription());	//説明
+	    	entity.setAmountValue(form.getStockAmounts());		//個数
+	    	//END -- 障害ID:0005対応 --
+
 	    	entity.setDeleteFlag(DeleteFlagConsts.ACTIVE);
 		
 	    }

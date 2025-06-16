@@ -28,4 +28,8 @@ JpaSpecificationExecutor<StockList> {
 	
 	StockList getByStockName(String stockName);
 
+	
+	// START -- 障害ID:006対応：更新時、名称重複登録チェック処理を追加 -- 
+	boolean existsByStockNameAndStockIdNot(String stockName, Integer stockId);
+	// END -- 障害ID:006対応 -- 
 }

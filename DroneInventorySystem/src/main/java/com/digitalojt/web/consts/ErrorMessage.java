@@ -58,4 +58,17 @@ public class ErrorMessage {
 	//更新対象が見つからなかった場合のエラーメッセージ
 	public static final String NOT_FOUND_UPDATE_ERROR_MESSAGE = "notfound.update";
 
+	//検索対象が見つからなかった場合のエラーメッセージ
+	public static final String NOT_FOUND_SEARCH_ERROR_MESSAGE = "data.empty";
+	
+	//検索時の予期せぬエラーメッセージ
+	public static final String UNEXPECTED_SEARCH_ERROR_MESSAGE = "unexpectedError.search";
+	
+	//部品在庫登録時の空欄を検知した際のエラーメッセージ
+	public static final String STOCKPARTS_NAME_REQUIRED = "{stockParts.name.required}";
+	public static final String STOCKPARTS_INPUT_NAME_ERROR_MESSAGE = "{stockParts.name.invalid.input}";
+	public static final String STOCKPARTS_INPUT_DESCRIPTION_ERROR_MESSAGE = "{stockParts.description.invalid.input}";
+	public static final String STOCKPARTS_NAME_INVALID_LENGTH = "{stockParts.name.length.wrongInput}";
+	public static final String STOCKPARTS_DESCRIPTION_INVALID_LENGTH = "{stockParts.description.length.wrongInput}";
+
 }

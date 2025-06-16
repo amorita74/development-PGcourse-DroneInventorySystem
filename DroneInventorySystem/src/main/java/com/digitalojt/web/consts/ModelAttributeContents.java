@@ -46,4 +46,10 @@ public class ModelAttributeContents {
 	
 	public static final String STOCK_PARTS_FORM = "partsInfoForm";
 
+	//登録エラー
+	public static final String STOCK_PARTS_ITEM_STOCKNAME = "stockName";
+	public static final String STOCK_PARTS_ITEM_DESCRIPTION = "stockDescription";
+	public static final String STOCK_PARTS_ITEM_AMOUNTVALUE = "amountValue";
+
+	
 }
